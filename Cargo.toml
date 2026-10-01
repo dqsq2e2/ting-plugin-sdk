@@ -1,0 +1,13 @@
+[package]
+name = "ting-plugin-sdk"
+version = "2.0.1"
+edition = "2024"
+license = "MIT"
+description = "Ting Reader plugin runtime and Host resource SDK"
+repository = "https://github.com/dqsq2e2/ting-plugin-sdk"
+readme = "README.md"
+
+[dependencies]
+ting-plugin-contract = { git = "https://github.com/dqsq2e2/ting-reader-plugin-contract.git", tag = "v2.0.1" }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
