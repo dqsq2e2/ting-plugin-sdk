@@ -76,7 +76,7 @@ cargo build --release
 
 将产物放到清单 `entry_point` 指定的位置，使用 `trpack validate`、`trpack build --sign-key`、`trpack verify`，再在测试服务端安装 `.tr` 包并调用实际功能。
 
-完整流程见 [插件开发指南](https://github.com/dqsq2e2/ting-reader/blob/chore/rust-2024-edition/docs/plugins/plugin-dev.md)，接口与权限见同目录的能力、Host 和运行时文档。
+完整流程见 [插件开发指南](https://github.com/dqsq2e2/ting-reader/blob/main/docs/plugins/plugin-dev.md)，接口与权限见同目录的能力、Host 和运行时文档。
 
 ## JavaScript
 
