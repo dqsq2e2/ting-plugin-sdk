@@ -1,4 +1,4 @@
-export declare const SDK_VERSION: "2.0.1";
+export declare const SDK_VERSION: "2.0.3";
 export declare const MAX_CHUNK_BYTES = 262144;
 export type ResourceId = string;
 export type ChunkRef = string;
