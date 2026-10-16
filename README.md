@@ -11,7 +11,7 @@
 crate-type = ["cdylib"]
 
 [dependencies]
-ting-plugin-sdk = { git = "https://github.com/dqsq2e2/ting-plugin-sdk.git", tag = "v2.0.3" }
+ting-plugin-sdk = { git = "https://github.com/dqsq2e2/ting-plugin-sdk.git", tag = "v2.0.4" }
 serde_json = "1"
 ```
 
@@ -78,9 +78,26 @@ cargo build --release
 
 完整流程见 [插件开发指南](https://github.com/dqsq2e2/ting-reader/blob/main/docs/plugins/plugin-dev.md)，接口与权限见同目录的能力、Host 和运行时文档。
 
+## 错误处理
+
+Rust 插件返回 `SdkError`，通过 `PluginErrorCode` 分类；错误信息只用于展示。JavaScript 插件使用 SDK 的 `failure(code, message, context, options)` 返回协议错误，`code` 的类型为 `PluginErrorCode`，支持的值与协议一致。`options.details` 保存可公开的上下文，`options.retryable` 表示是否适合重试：
+
+```js
+return failure("network_error", "上游服务暂时不可用", {
+  plugin_id: "example",
+  capability_id: "metadata",
+  operation: "search",
+  request_id: "request-1",
+}, { details: { reason: "upstream_busy" }, retryable: true });
+```
+
+消息上限为 512 UTF-8 字节，身份字段上限为 128 字节，`details` 上限为 4096 字节。不要把密钥、请求头或签名 URL 填入错误信息。
+
+插件 Web 页面收到 `ting-plugin:response` 且 `ok` 为 `false` 时，`error` 是包含 `error/message/details/trace_id` 的对象。调用 `window.__TING_PLUGIN_BRIDGE__.createError(response.error)` 生成异常，可通过 `code`、`details`、`retryable`、`trace_id` 和 `status` 读取分类信息；`message` 保持可直接展示。
+
 ## JavaScript
 
-`javascript/sdk.mjs` 提供 `success`、`failure`、`publishSearch` 和资源辅助函数，`javascript/sdk.d.ts` 提供类型声明。插件业务入口按相对路径导入：
+`javascript/sdk.mjs` 提供 `success`、`failure`、`publishSearch` 和资源辅助函数，`javascript/sdk.d.ts` 提供类型声明。`errorInfo(error)` 可将部分成功结果中的失败项转换为可序列化的 `code/message/details/retryable`，保留 Host 分类。插件业务入口按相对路径导入：
 
 ```js
 import { success, publishSearch } from './sdk.mjs';

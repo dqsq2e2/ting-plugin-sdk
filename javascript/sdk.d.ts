@@ -1,13 +1,27 @@
-export declare const SDK_VERSION: "2.0.3";
+export declare const SDK_VERSION: "2.0.4";
 export declare const MAX_CHUNK_BYTES = 262144;
 export type ResourceId = string;
 export type ChunkRef = string;
 export type SessionId = string;
-export type Result<T> = { ok: true; data: T } | {
-  ok: false; error: { code: string; message: string; details: unknown;
-    plugin_id: string; capability_id: string; operation: string;
-    request_id: string; retryable: boolean };
-};
+export type PluginErrorCode =
+  | "invalid_manifest" | "invalid_input" | "invalid_output"
+  | "unsupported_operation" | "permission_denied" | "not_found"
+  | "conflict" | "network_error" | "parse_error" | "timeout" | "cancelled"
+  | "resource_limit" | "dependency_error" | "abi_mismatch"
+  | "plugin_unavailable" | "internal_error";
+export interface PluginError {
+  code: PluginErrorCode;
+  message: string;
+  details: unknown;
+  plugin_id: string;
+  capability_id: string;
+  operation: string;
+  request_id: string;
+  retryable: boolean;
+}
+export type PluginErrorInfo = Pick<PluginError, "code" | "message" | "details" | "retryable">;
+export declare function errorInfo(error: unknown, fallbackCode?: PluginErrorCode): PluginErrorInfo;
+export type Result<T> = { ok: true; data: T } | { ok: false; error: PluginError };
 export declare function host<T = unknown>(method: string, input?: object): Promise<T>;
 export declare const resources: Readonly<{
   stat(resource: ResourceId): Promise<{
@@ -64,6 +78,6 @@ export declare function publishSearch(
   request: { page: number; page_size: number },
 ): SearchPage;
 export declare function success<T>(data: T): Result<T>;
-export declare function failure(code: string, message: string, context: {
+export declare function failure(code: PluginErrorCode, message: string, context: {
   plugin_id: string; capability_id: string; operation: string; request_id: string;
-}): Result<never>;
+}, options?: { details?: unknown; retryable?: boolean }): Result<never>;
