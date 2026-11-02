@@ -11,7 +11,7 @@
 crate-type = ["cdylib"]
 
 [dependencies]
-ting-plugin-sdk = { git = "https://github.com/dqsq2e2/ting-plugin-sdk.git", tag = "v2.0.4" }
+ting-plugin-sdk = { git = "https://github.com/dqsq2e2/ting-plugin-sdk.git", tag = "v2.0.5" }
 serde_json = "1"
 ```
 
@@ -46,6 +46,14 @@ ting_plugin_sdk::export_plugin!(MyPlugin);
 ```
 
 在 `plugin.yml` 中填写相同的插件 ID，声明 `tool_provider` 能力、`invokeTool` 操作及工具输入输出 Schema。元数据搜索插件可使用 [ting-scraper-sdk](https://github.com/dqsq2e2/ting-scraper-sdk) 的结果转换函数。
+
+## 书源插件
+
+在 `metadata_provider` 中声明 `book_source: true` 并实现 `search`、`detail`、`resolve_audio`，即可同时提供刮削和远程书源。未声明的旧插件行为不变。
+
+`search` 使用原有 `SearchPage`；书源的 `detail` 返回 `SourceBookDetail { metadata, chapters }`，普通刮削器仍返回 `ScraperResult`。`resolve_audio` 返回 `MediaSourceDescriptor`，可选的 `headers` 仅由服务端媒体代理使用，不传给客户端。Rust 类型通过 `ting_plugin_sdk::contract::scraper` 导入，JavaScript 类型位于 `javascript/sdk.d.ts`。
+
+完整字段、限制和当前支持范围见[书源能力文档](https://github.com/dqsq2e2/ting-reader/blob/main/docs/plugins/capabilities.md#书源)。书源声明与媒体请求头需要契约 `v2.0.4` 及支持书源的主程序版本。
 
 ## 调用 Host
 

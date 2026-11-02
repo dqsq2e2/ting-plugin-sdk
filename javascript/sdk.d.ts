@@ -1,4 +1,4 @@
-export declare const SDK_VERSION: "2.0.4";
+export declare const SDK_VERSION: "2.0.5";
 export declare const MAX_CHUNK_BYTES = 262144;
 export type ResourceId = string;
 export type ChunkRef = string;
@@ -72,6 +72,31 @@ export interface SearchPage {
   page_size: number;
   total: number | null;
   has_more: boolean | null;
+}
+export interface SourceRef {
+  id: string | null;
+  url: string | null;
+}
+export interface SourceChapter {
+  id: string;
+  title: string;
+  index: number;
+  duration: number | null;
+  source_url: string | null;
+}
+/** Returned by detail only when metadata_provider.book_source is true. */
+export interface SourceBookDetail {
+  metadata: ScraperResult;
+  chapters: SourceChapter[];
+}
+/** Headers remain on the server; they are not exposed through media URLs. */
+export interface MediaSourceDescriptor {
+  type: "direct" | "hls" | "proxy";
+  url: string;
+  headers?: Record<string, string>;
+  expires_at: string | null;
+  seekable: boolean;
+  mime: string | null;
 }
 export declare function publishSearch(
   parsed: { items: object[]; total?: number | null; has_more?: boolean | null },
